@@ -1,0 +1,48 @@
+1.若配置好的虚拟机关机后再开机, 需要执行以下命令来开启服务:
+	1) Tracker虚拟机中, 即leapfrog-main中:
+	开启FastDFS服务
+		/usr/bin/fdfs_trackerd /etc/fdfs/tracker.conf restart
+	开启Nginx服务
+		cd /usr/local/nginx/sbin
+		./nginx -c /usr/local/nginx/conf/nginx-fdfs.conf
+	开启Redis服务 - 生成全国唯一商品id
+		cd /redis/6379/
+		./bin/redis-server redis.conf
+	开启Tomcat - 商品搜索(solr)
+		sh /opt/apache-tomcat-8.5.35/bin/startup.sh
+	开启ActiveMQ
+		cd /activemq/apache-activemq-5.14.5/bin/linux-x86-64
+		./activemq start
+	关闭nginx服务
+		pkill -9 nginx
+	2) Storage虚拟机中, 即leapfrog-sub中:
+	开启FastDFS服务
+		/usr/bin/fdfs_storaged /etc/fdfs/storage.conf restart
+	开启Nginx服务
+		cd /usr/local/nginx/sbin
+		./nginx -c /usr/local/nginx/conf/nginx-fdfs.conf
+
+端口号：
+	youlexuan-user-service HHTPport:9006  JMXport:1094
+	youlexuan-user-web     HHTPport:9106  JMXport:1105
+	youlexuan-cart-service HHTPport:9007  JMXport:1093
+	youlexuan-cart-web     HHTPport:9107  JMXport:1106
+	youlexuan-order-service HHTPport:9008  JMXport:1092
+	youlexuan-pay-service HHTPport:9000  JMXport:1200	
+
+随机密码：  ?v>U6yZajav0
+
+server.1=192.168.191.129:2881:3881
+server.2=192.168.191.129:2882:3882
+server.3=192.168.191.129:2883:3883
+
+usr/local/solrhomes/solrhome-2
+JAVA_OPTS="-DzkHost=192.168.191.129:2181,192.168.191.129:2182,192.168.191.129:2183"
+
+停止redis命令 ：
+ ./redis-cli  -p 7001 shutdown
+ ./redis-cli  -p 7002 shutdown
+使用redis-cli启动集群
+进入任意一个redis命令目录，执行以下命令：
+cd /usr/local/redis-cluster/redis-1/bin/
+./redis-cli --cluster create 192.168.191.129:7001 192.168.191.129:7002 192.168.191.129:7003 192.168.191.129:7004 192.168.191.129:7005 192.168.191.129:7006 --cluster-replicas 1
